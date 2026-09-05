@@ -1,0 +1,573 @@
+<title>Carte Repères France</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+<style>
+:root{
+  --paper:#e9eef2;
+  --panel:#f7f9fb;
+  --panel-2:#eef2f6;
+  --ink:#16202b;
+  --ink-2:#5a6874;
+  --ink-3:#8d99a4;
+  --line:#c6d0d9;
+  --line-soft:#dde4ea;
+  --sea:#dfe9f0;
+  --land:#e7edf1;
+  --land-fr:#fbfcfd;
+  --border-fr:#5c6a76;
+  --coast:#93a0ab;
+  --fleuve:#d9a41c;
+  --montagne:#2b90d0;
+  --ville:#cc352f;
+  --relief:#c9d3da;
+  --fleuve-ink:#8a6710;
+  --montagne-ink:#1c6ca0;
+  --ville-ink:#b02b26;
+  --ok:#2c7d55;
+  --ok-bg:#dff0e6;
+  --ko:#c0392b;
+  --ko-bg:#fae2df;
+  --shadow:0 1px 2px rgba(22,32,43,.10), 0 8px 24px -14px rgba(22,32,43,.30);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e151c;
+    --panel:#151f28;
+    --panel-2:#1b2732;
+    --ink:#e7eef4;
+    --ink-2:#93a3b1;
+    --ink-3:#6b7a88;
+    --line:#2c3b48;
+    --line-soft:#22303c;
+    --sea:#14202b;
+    --land:#182430;
+    --land-fr:#22303c;
+    --border-fr:#93a3b1;
+    --coast:#5b6c79;
+    --fleuve:#e9bb46;
+    --montagne:#52b0ec;
+    --ville:#f2685f;
+    --relief:#27343f;
+    --fleuve-ink:#e9bb46;
+    --montagne-ink:#6cc0f5;
+    --ville-ink:#f2685f;
+    --ok:#57bf8a;
+    --ok-bg:#163023;
+    --ko:#ff8175;
+    --ko-bg:#331c1a;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e151c; --panel:#151f28; --panel-2:#1b2732;
+  --ink:#e7eef4; --ink-2:#93a3b1; --ink-3:#6b7a88;
+  --line:#2c3b48; --line-soft:#22303c;
+  --sea:#14202b; --land:#182430; --land-fr:#22303c; --border-fr:#93a3b1; --coast:#5b6c79;
+  --fleuve:#e9bb46; --montagne:#52b0ec; --ville:#f2685f; --relief:#27343f;
+  --fleuve-ink:#e9bb46; --montagne-ink:#6cc0f5; --ville-ink:#f2685f;
+  --ok:#57bf8a; --ok-bg:#163023; --ko:#ff8175; --ko-bg:#331c1a;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}   /* sinon display:flex l'emporte sur l'attribut */
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1360px;margin:0 auto;padding:20px 20px 56px}
+
+/* ---------- header ---------- */
+header{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 24px;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.brand{flex:1 1 340px;min-width:0}
+.eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);font-weight:600;margin:0 0 6px}
+h1{font-family:"Newsreader",Georgia,serif;font-weight:500;font-size:clamp(26px,3.4vw,40px);line-height:1.04;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--ink-2)}
+.sub{margin:8px 0 0;color:var(--ink-2);font-size:14px;max-width:56ch;line-height:1.5}
+.tally{display:flex;gap:10px;align-items:stretch}
+.tally .box{
+  background:var(--panel);border:1px solid var(--line-soft);border-radius:10px;
+  padding:8px 14px;min-width:96px;box-shadow:var(--shadow)
+}
+.tally .k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.tally .v{font-family:"Newsreader",Georgia,serif;font-size:26px;line-height:1.15;font-variant-numeric:tabular-nums}
+
+/* ---------- layout ---------- */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:20px;align-items:start}
+@media (max-width:1000px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- map ---------- */
+.mapcard{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:10px;box-shadow:var(--shadow)}
+.mapbox{position:relative;container-type:inline-size;width:100%}
+.mapbox svg{display:block;width:100%;height:auto;border-radius:6px}
+#layer{position:absolute;inset:0}
+.slot{
+  position:absolute;transform:translate(-50%,-50%);
+  font:inherit;font-size:clamp(8.5px,1.52cqw,14px);
+  padding:.28em .6em;white-space:nowrap;cursor:pointer;
+  border-radius:4px;border:1px dashed var(--coast);
+  background:var(--panel);color:var(--ink-3);
+  min-width:4.3em;text-align:center;line-height:1.35;
+  transition:border-color .12s, background .12s, color .12s, box-shadow .12s;
+}
+.slot:hover{border-color:var(--ink-2);color:var(--ink-2)}
+.slot:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.slot.filled{border-style:solid;border-color:var(--line);color:var(--ink);background:var(--panel);font-weight:500;box-shadow:0 1px 0 rgba(0,0,0,.05)}
+.slot.active{border-color:var(--ink);border-style:solid;color:var(--ink);box-shadow:0 0 0 3px color-mix(in srgb, var(--ink) 14%, transparent)}
+.slot.ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.slot.ko{border-color:var(--ko);background:var(--ko-bg);color:var(--ko)}
+.slot .fix{display:block;font-size:.86em;font-weight:600;color:var(--ok);margin-top:.1em}
+.slot .bad{text-decoration:line-through;opacity:.65;font-weight:400}
+/* atlas conventions */
+.slot.filled[data-cat="fleuve"],.slot.filled[data-cat="mer"]{font-family:"Newsreader",Georgia,serif;font-style:italic;font-size:clamp(9.5px,1.72cqw,16px);font-weight:500}
+.slot.filled[data-cat="montagne"]{text-transform:uppercase;letter-spacing:.1em;font-size:clamp(8px,1.36cqw,13px)}
+.slot.filled[data-cat="pays"]{text-transform:uppercase;letter-spacing:.13em;font-weight:600;font-size:clamp(8px,1.36cqw,13px)}
+/* mode révision : la carte se lit comme un atlas, plus comme un formulaire */
+.slot.ref{border:0;background:color-mix(in srgb, var(--panel) 82%, transparent);
+  color:var(--ink);cursor:default;box-shadow:none;min-width:0;font-weight:500;padding:.2em .45em}
+.slot.ref[data-cat="ville"]{color:var(--ville-ink)}
+.slot.ref[data-cat="fleuve"]{color:var(--fleuve-ink)}
+.slot.ref[data-cat="montagne"]{color:var(--montagne-ink)}
+.slot.ref[data-cat="pays"],.slot.ref[data-cat="mer"]{color:var(--ink-2)}
+.modes{display:flex;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:3px;gap:3px;margin-bottom:10px}
+.modes button{flex:1;font:inherit;font-size:12.5px;padding:7px 8px;border:0;border-radius:6px;background:transparent;color:var(--ink-2);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.modes button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.slot input{
+  font:inherit;font-size:1em;width:8.4em;border:0;background:transparent;color:var(--ink);
+  text-align:center;padding:0;outline:none
+}
+
+/* ---------- rail ---------- */
+.rail{display:flex;flex-direction:column;gap:16px;position:sticky;top:18px}
+@media (max-width:1000px){.rail{position:static}}
+.card{background:var(--panel);border:1px solid var(--line-soft);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+.card h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);margin:0 0 10px;font-weight:600}
+
+/* legend, transcribed from the worksheet */
+.legend{display:grid;gap:9px}
+.legend div{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
+.swatch{width:26px;height:13px;border-radius:2px;flex:none}
+.swatch.blank{background:var(--panel-2);border:1px dashed var(--coast)}
+.swatch.fleuve{background:var(--fleuve)}
+.swatch.montagne{background:var(--montagne)}
+.swatch.ville{width:26px;display:flex;justify-content:center}
+.swatch.ville i{width:9px;height:9px;border-radius:50%;background:var(--ville);display:block}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+button.act{
+  font:inherit;font-size:13px;font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer;
+  border:1px solid var(--line);background:var(--panel-2);color:var(--ink);flex:1 1 auto
+}
+button.act:hover{border-color:var(--ink-2)}
+button.act:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+button.act.primary{background:var(--ink);color:var(--panel);border-color:var(--ink);flex:1 1 100%}
+button.act.primary:disabled{opacity:.4;cursor:not-allowed}
+.hint{font-size:12px;color:var(--ink-3);line-height:1.5;margin:10px 0 0}
+
+/* results */
+.bars{display:grid;gap:8px;margin-bottom:12px}
+.bar{display:grid;grid-template-columns:70px 1fr 34px;align-items:center;gap:9px;font-size:12px;color:var(--ink-2)}
+.bar .track{height:6px;border-radius:3px;background:var(--panel-2);overflow:hidden}
+.bar .fill{height:100%;border-radius:3px}
+.bar .n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.errs{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.errs li{font-size:12.5px;display:flex;gap:8px;align-items:baseline;border-top:1px solid var(--line-soft);padding-top:6px}
+.errs li:first-child{border-top:0;padding-top:0}
+.errs .was{color:var(--ko);text-decoration:line-through;flex:none}
+.errs .is{color:var(--ok);font-weight:600}
+.errs .tag{margin-left:auto;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);border-radius:3px;padding:1px 5px;flex:none;align-self:center}
+.verdict{font-family:"Newsreader",Georgia,serif;font-size:15px;line-height:1.45;color:var(--ink-2);margin:0 0 12px}
+.verdict b{color:var(--ink);font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="brand">
+    <p class="eyebrow">Cartes repères · Classe de troisième</p>
+    <h1>La France <em>en 34 repères</em></h1>
+    <p class="sub">Clique un emplacement et tape le nom : les fleuves en jaune, les massifs en bleu, les grandes aires urbaines aux points rouges, et les mers autour. Puis vérifie.</p>
+  </div>
+  <div class="tally">
+    <div class="box"><div class="k">Placés</div><div class="v" id="tPlaced">0<span style="font-size:16px;color:var(--ink-3)">/34</span></div></div>
+    <div class="box"><div class="k">Score</div><div class="v" id="tScore">—</div></div>
+  </div>
+</header>
+
+<div class="grid">
+  <div class="mapcard">
+    <div class="mapbox">
+      <svg viewBox="0 0 900 1080" role="img" aria-label="Carte de la France et des pays frontaliers, à compléter">
+        <defs>
+          <pattern id="stipple" width="7" height="7" patternUnits="userSpaceOnUse">
+            <circle cx="1.4" cy="1.4" r=".7" fill="var(--coast)" opacity=".28"/></pattern>
+          <clipPath id="frame"><rect x="10" y="10" width="880" height="1060"/></clipPath>
+        </defs>
+        <rect x="10" y="10" width="880" height="1060" fill="var(--sea)"/>
+        <rect x="10" y="10" width="880" height="1060" fill="url(#stipple)"/>
+        <g clip-path="url(#frame)">
+          <polygon fill="var(--land)" stroke="var(--coast)" stroke-width="1.6" stroke-linejoin="round" points="10,809.4 60.3,806.8 110.6,809.4 160.9,820.9 211.1,820.9 251.4,822.7 272.5,827.1 284.1,815.6 296.6,760.8 303.7,711.4 309.2,672.5 310.2,626.6 304.2,578.9 272.5,548.8 266.5,513.5 251.4,479.9 223.7,458.7 192.5,440.2 155.8,434 124.7,412.8 133.2,382.8 181,356.3 221.2,356.3 260.4,358.9 281.5,342.1 269,292.7 280.5,267.9 301.7,299.7 351.9,297.1 367,283.8 430.9,234.4 455,155.7 481.2,146.9 490.2,142.5 520.4,120.4 540.5,111.6 560.6,98.3 573.2,67.4 593.3,32.1 600.9,10 890,10 890,809.4 867.4,774.1 857.3,763.5 824.6,741.4 812.1,734.3 788.4,743.2 765.8,780.3 744.2,788.2 740.7,789.1 727.6,797.9 693.9,835.9 660.2,849.2 631,833.3 605.9,828.9 570.7,820.9 548.1,827.1 515.4,855.4 515.4,908.4 522.9,915.4 520.4,955.2 502.8,977.3 472.6,1003.8 422.3,1025.8 405.7,1059.4 398.2,1070 10,1070"/>
+          <polygon fill="var(--land)" stroke="var(--coast)" stroke-width="1.6" stroke-linejoin="round" points="110.6,10 130.7,36.5 155.8,58.6 138.2,87.7 98,89.5 130.7,98.3 170.9,102.8 211.1,108.9 233.8,117.8 191,131.9 148.3,135.4 133.2,166.4 106.5,202.6 74.4,233.5 100.5,243.2 108.1,226.4 153.8,208.8 185,199 191,184.9 238.8,186.7 268,176.1 306.7,172.5 346.9,169 399.7,167.2 433.4,139 412.3,108.9 394.7,89.5 427.4,54.2 450,23.2 447.5,10"/>
+          <g fill="none" stroke="var(--coast)" stroke-width="1.3" stroke-linejoin="round" opacity=".85">
+            <polyline points="540.5,111.6 573.2,114.2 615.9,109.8 653.7,138.1 664.7,173.4"/>
+            <polyline points="664.7,173.4 668.7,133.7 706.5,85.1 716.5,36.5 724.1,10"/>
+            <polyline points="664.7,173.4 681.3,211.4 670.3,228.2"/>
+            <polyline points="653.2,279.4 651.1,248.5 670.3,228.2 688.9,257.3 690.4,281.2 682.3,287.4"/>
+            <polyline points="743.7,452.5 784.4,453.4 819.6,444.6 844.7,456.1 847.3,464.9"/>
+            <polyline points="847.3,464.9 842.2,500.3 869.9,517.9 887.5,516.2"/>
+            <polyline points="887.5,516.2 869.9,540 827.1,566.5 804.5,584.2 769.3,575.3 714,601.8 707,608"/>
+            <polyline points="847.3,464.9 874.9,473.8 890,456.1"/>
+          </g>
+          <polygon fill="var(--land-fr)" stroke="var(--border-fr)" stroke-width="2.4" stroke-linejoin="round" points="481.2,146.9 455,155.7 430.9,234.4 367,283.8 351.9,297.1 301.7,299.7 280.5,267.9 269,292.7 281.5,342.1 260.4,358.9 221.2,356.3 181,356.3 133.2,382.8 124.7,412.8 155.8,434 192.5,440.2 223.7,458.7 251.4,479.9 266.5,513.5 272.5,548.8 304.2,578.9 310.2,626.6 309.2,672.5 303.7,711.4 296.6,760.8 284.1,815.6 272.5,827.1 324.3,866.8 377.1,884.5 434.9,902.2 472.6,906.6 515.4,908.4 515.4,855.4 548.1,827.1 570.7,820.9 605.9,828.9 631,833.3 660.2,849.2 693.9,835.9 727.6,797.9 740.7,789.1 746.7,765.3 714,756.4 706.5,694.6 719,646 707,608 703.9,582.4 670.8,575.3 668.7,555.9 686.3,524.1 714,473.8 743.7,452.5 745.2,407.5 753.7,363.3 769.3,341.2 775.9,330.7 759.3,323.6 717.5,318.3 693.9,305.9 682.3,287.4 653.2,279.4 621,267.9 606.9,258.2 603.4,226.4 573.2,243.2 548.1,211.4 526.9,192.9 506.3,177 490.2,152.2"/>
+          <g fill="var(--relief)" stroke="var(--montagne)" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round">
+            <polygon points="467.6,584.2 522.9,566.5 565.7,606.2 580.7,672.5 573.2,743.2 543,778.5 505.3,756.4 472.6,707.8 455,641.6"/>
+            <polygon points="658.7,566.5 709,593 729.1,654.8 729.1,716.7 706.5,760.8 681.3,738.8 656.2,690.2 648.6,628.3"/>
+            <polygon points="289.1,844.8 341.9,858 392.2,866.8 447.5,884.5 495.3,897.8 517.9,906.6 492.7,915.4 437.4,906.6 377.1,893.3 321.8,875.7 281.5,862.4"/>
+            <polygon points="701.4,363.3 716.5,376.6 724.1,407.5 716.5,429.6 706.5,411.9 698.9,385.4"/>
+            <polygon points="651.1,566.5 671.3,540 698.9,500.3 719,464.9 709,456.1 681.3,491.4 656.2,531.2 643.6,557.7"/>
+          </g>
+          <g fill="none" stroke="var(--fleuve)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="367,283.8 417.3,289.1 450,326.2 480.2,340.4 510.3,382.8 567.2,389.8 591.8,428.7 599.3,434"/>
+            <polyline points="251.4,479.9 284.1,485.2 334.3,463.2 396.7,470.2 457.5,425.2 520.9,505.5 566.7,590.4 574.2,695.5"/>
+            <polyline points="310.2,626.6 332.8,695.5 393.2,752 434.4,805 407.3,853.6 392.2,880.1"/>
+            <polyline points="670.8,575.3 605.4,614.2 607.9,687.5 603.9,774.1 593.3,827.1"/>
+            <polyline points="743.7,452.5 745.2,407.5 753.7,363.3 769.3,341.2 775.9,330.7 779.4,292.7 774.3,248.5 744.2,208.8 724.1,191.1 711.5,160.2 673.8,107.2 661.2,76.2"/>
+          </g>
+          <g fill="var(--ville)" stroke="var(--land-fr)" stroke-width="1.5">
+            <circle cx="515.9" cy="184" r="6"/>
+            <circle cx="480.2" cy="340.4" r="6"/>
+            <circle cx="751.7" cy="365.1" r="6"/>
+            <circle cx="277.5" cy="406.6" r="6"/>
+            <circle cx="284.1" cy="485.2" r="6"/>
+            <circle cx="605.4" cy="614.2" r="6"/>
+            <circle cx="649.6" cy="664.6" r="6"/>
+            <circle cx="332.8" cy="695.5" r="6"/>
+            <circle cx="434.4" cy="805" r="6"/>
+            <circle cx="557.1" cy="804.1" r="6"/>
+            <circle cx="632" cy="831.5" r="6"/>
+            <circle cx="727.6" cy="796.2" r="6"/>
+          </g>
+        </g>
+        <rect x="762" y="892" width="122" height="172" fill="var(--sea)" stroke="var(--coast)" stroke-width="1.6"/>
+        <rect x="762" y="892" width="122" height="172" fill="url(#stipple)"/>
+        <polygon fill="var(--land-fr)" stroke="var(--border-fr)" stroke-width="1.8" stroke-linejoin="round" points="849,907 857.6,924.3 866.3,947.7 864.6,986.7 853.3,1012.6 842.9,1030 831.7,1049 801.4,1034.3 797,1008.3 779.7,973.7 788.4,947.7 810,939 836,934.7"/>
+        <text x="823" y="1053" fill="var(--ink-3)" font-family="Archivo, sans-serif" font-size="13" letter-spacing="1.6" text-anchor="middle">CORSE</text>
+        <g stroke="var(--coast)" stroke-width="1.8" fill="none">
+          <path d="M52 1024 h65"/><path d="M52 1019 v10"/><path d="M117 1019 v10"/>
+        </g>
+        <text x="84.5" y="1012" fill="var(--ink-3)" font-family="Archivo, sans-serif" font-size="13" text-anchor="middle">100 km</text>
+        <g transform="translate(62.8,266.2)" stroke="var(--coast)" stroke-width="1.6" fill="none">
+          <circle cx="0" cy="0" r="22"/><path d="M0 -30 V30 M-30 0 H30"/>
+          <polygon points="0,-36 -5,-24 5,-24" fill="var(--coast)" stroke="none"/>
+          <text x="0" y="-42" fill="var(--ink-3)" font-family="Archivo, sans-serif" font-size="13" font-weight="600" text-anchor="middle" stroke="none">N</text>
+        </g>
+        <rect x="10" y="10" width="880" height="1060" fill="none" stroke="var(--coast)" stroke-width="2"/>
+      </svg>
+      <div id="layer"></div>
+    </div>
+  </div>
+
+  <div class="rail">
+    <div class="card">
+      <div class="modes" role="group" aria-label="Mode">
+        <button id="mEx" aria-pressed="true">Exercice</button>
+        <button id="mRev" aria-pressed="false">Carte remplie</button>
+      </div>
+      <div class="controls" id="controls">
+        <button class="act primary" id="bCheck">Vérifier</button>
+        <button class="act" id="bClear">Effacer</button>
+      </div>
+      <p class="hint" id="hint"></p>
+    </div>
+
+    <div class="card" id="results" hidden>
+      <h2>Résultat</h2>
+      <p class="verdict" id="verdict"></p>
+      <div class="bars" id="bars"></div>
+      <ul class="errs" id="errs"></ul>
+    </div>
+
+    <div class="card">
+      <h2>Légende</h2>
+      <div class="legend">
+        <div><span class="swatch blank"></span> à compléter</div>
+        <div><span class="swatch fleuve"></span> fleuves</div>
+        <div><span class="swatch montagne"></span> montagnes</div>
+        <div><span class="swatch ville"><i></i></span> grandes aires urbaines</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const VB = [900, 1080];
+const SLOTS = [
+  {id:"royaume-uni", label:"ROYAUME-UNI", cat:"pays", x:216.2, y:76.2, alt:[]},
+  {id:"mer-du-nord", label:"Mer du Nord", cat:"mer", x:492.7, y:52.4, alt:[]},
+  {id:"manche", label:"Manche", cat:"mer", x:296.6, y:229.1, alt:[]},
+  {id:"belgique", label:"BELGIQUE", cat:"pays", x:593.3, y:161.9, alt:[]},
+  {id:"luxembourg", label:"LUXEMBOURG", cat:"pays", x:671.3, y:257.3, alt:[]},
+  {id:"allemagne", label:"ALLEMAGNE", cat:"pays", x:824.6, y:279.4, alt:[]},
+  {id:"suisse", label:"SUISSE", cat:"pays", x:786.9, y:509.1, alt:[]},
+  {id:"italie", label:"ITALIE", cat:"pays", x:832.2, y:685.7, alt:[]},
+  {id:"espagne", label:"ESPAGNE", cat:"pays", x:196.1, y:986.1, alt:[]},
+  {id:"mediterranee", label:"Mer Méditerranée", cat:"mer", x:615.9, y:979.9, alt:[]},
+  {id:"atlantique", label:"Océan Atlantique", cat:"mer", x:143.3, y:606.2, alt:[]},
+  {id:"seine", label:"Seine", cat:"fleuve", x:427.4, y:313.9, alt:[]},
+  {id:"loire", label:"Loire", cat:"fleuve", x:369.5, y:441.1, alt:[]},
+  {id:"garonne", label:"Garonne", cat:"fleuve", x:364.5, y:721.1, alt:[]},
+  {id:"rhone", label:"Rhône", cat:"fleuve", x:633.5, y:729.9, alt:[]},
+  {id:"rhin-1", label:"Rhin", cat:"fleuve", x:748.2, y:163.7, alt:[]},
+  {id:"rhin-2", label:"Rhin", cat:"fleuve", x:789.4, y:411.9, alt:[]},
+  {id:"vosges", label:"Vosges", cat:"montagne", x:663.7, y:396.9, alt:[]},
+  {id:"jura", label:"Jura", cat:"montagne", x:628.5, y:497.6, alt:[]},
+  {id:"alpes", label:"Alpes", cat:"montagne", x:761.8, y:676.9, alt:[]},
+  {id:"massif", label:"Massif Central", cat:"montagne", x:510.3, y:654.8, alt:[]},
+  {id:"pyrenees", label:"Pyrénées", cat:"montagne", x:389.7, y:882.7, alt:[]},
+  {id:"lille", label:"Lille", cat:"ville", x:485.2, y:158.4, alt:[]},
+  {id:"paris", label:"Paris", cat:"ville", x:517.9, y:345.7, alt:[]},
+  {id:"strasbourg", label:"Strasbourg", cat:"ville", x:688.9, y:359.8, alt:[]},
+  {id:"rennes", label:"Rennes", cat:"ville", x:269, y:377.5, alt:[]},
+  {id:"nantes", label:"Nantes", cat:"ville", x:263.9, y:513.5, alt:[]},
+  {id:"lyon", label:"Lyon", cat:"ville", x:565.7, y:593, alt:[]},
+  {id:"grenoble", label:"Grenoble", cat:"ville", x:686.3, y:663.7, alt:[]},
+  {id:"bordeaux", label:"Bordeaux", cat:"ville", x:291.6, y:681.3, alt:[]},
+  {id:"toulouse", label:"Toulouse", cat:"ville", x:427.4, y:840.3, alt:[]},
+  {id:"montpellier", label:"Montpellier", cat:"ville", x:540.5, y:840.3, alt:[]},
+  {id:"marseille", label:"Marseille", cat:"ville", x:653.7, y:863.3, alt:[]},
+  {id:"nice", label:"Nice", cat:"ville", x:754.2, y:790.9, alt:[]}
+];
+
+const CATS = {
+  ville:    {name:"Grandes aires urbaines", color:"var(--ville)"},
+  fleuve:   {name:"Fleuves",                color:"var(--fleuve)"},
+  montagne: {name:"Montagnes",              color:"var(--montagne)"},
+  pays:     {name:"Pays et mers",           color:"var(--coast)"}
+};
+const bankCat = c => (c === "mer" ? "pays" : c);
+
+const N = SLOTS.length;
+const KEY = "carte-france-3e-v2";
+// l'orthographe compte : accents et lettres exacts. Seules la casse
+// et les espaces en trop sont ignorés.
+const key = s => (s||"").toLowerCase().trim().replace(/\s+/g," ");
+// version dégraissée, utilisée UNIQUEMENT pour repérer une faute d'orthographe
+const bare = s => key(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+function lev(a,b){
+  const m=a.length,n=b.length; if(Math.abs(m-n)>3) return 9;
+  let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){
+    const cur=[i];
+    for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+  }
+  return prev[n];
+}
+function judge(slot, value){
+  if(!key(value)) return "empty";
+  if(key(value) === key(slot.label)) return "ok";          // seule réponse juste
+  const v = bare(value), a = bare(slot.label);
+  if(v === a || lev(v,a) <= 2) return "spell";             // le bon repère, mal écrit
+  return "ko";
+}
+
+let mode = "exercice";    // exercice | revision
+let placed = {};          // slotId -> {value}
+let activeSlot = null;    // slotId
+let closeOpen = null;     // ferme la saisie en cours, sans dépendre du focus
+let checked = false;
+let verdictOf = {};       // slotId -> ok|spell|ko
+
+const layer = document.getElementById("layer");
+
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({placed, mode})); }catch(e){}
+}
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY)||"null");
+    if(d && d.placed) placed = d.placed;
+    if(d && d.mode === "revision") mode = "revision";
+  }catch(e){}
+}
+
+function buildSlots(){
+  layer.innerHTML = "";
+  for(const s of SLOTS){
+    const b = document.createElement("button");
+    b.className = "slot";
+    b.dataset.id = s.id;
+    b.dataset.cat = s.cat;
+    b.style.left = (s.x/VB[0]*100) + "%";
+    b.style.top  = (s.y/VB[1]*100) + "%";
+    b.addEventListener("click", () => { if(mode === "exercice") openInput(s.id); });
+    layer.appendChild(b);
+  }
+}
+
+function paintSlots(){
+  for(const s of SLOTS){
+    const el = layer.querySelector('[data-id="'+s.id+'"]');
+    if(mode === "exercice" && el.querySelector("input")) continue;
+    if(mode === "revision"){                    // la carte telle qu'il faut la connaître
+      el.className = "slot filled ref";
+      el.textContent = s.label;
+      el.disabled = true;
+      el.removeAttribute("aria-label");
+      continue;
+    }
+    el.disabled = false;
+    const p = placed[s.id];
+    el.className = "slot" + (p ? " filled" : "") + (activeSlot === s.id ? " active" : "");
+    if(checked && p){
+      const v = verdictOf[s.id];
+      el.classList.add(v === "ko" ? "ko" : "ok");
+      if(v === "ko"){
+        el.innerHTML = '<span class="bad"></span><span class="fix"></span>';
+        el.firstChild.textContent = p.value;
+        el.lastChild.textContent = s.label;
+      } else {
+        el.textContent = p.value;
+      }
+    } else {
+      el.textContent = p ? p.value : "";
+      el.setAttribute("aria-label", p ? p.value : "Emplacement à compléter");
+    }
+  }
+}
+
+function paintTally(){
+  const n = Object.keys(placed).length;
+  document.getElementById("tPlaced").innerHTML = n + '<span style="font-size:16px;color:var(--ink-3)">/' + N + '</span>';
+  document.getElementById("bCheck").disabled = n === 0;
+  if(!checked) document.getElementById("tScore").textContent = "—";
+}
+
+function render(){ paintSlots(); paintTally(); save(); }
+
+function put(id, value){
+  placed[id] = {value};
+  checked = false; hideResults();
+}
+
+function openInput(id){
+  const el = layer.querySelector('[data-id="'+id+'"]');
+  const cur = placed[id] ? placed[id].value : "";
+  el.className = "slot filled active";
+  el.innerHTML = "";
+  const inp = document.createElement("input");
+  inp.value = cur;
+  inp.setAttribute("aria-label", "Nom du repère");
+  el.appendChild(inp);
+  inp.focus(); inp.select();
+  closeOpen = () => commit(false);
+  const commit = (next) => {
+    closeOpen = null;
+    const v = inp.value.trim();
+    el.innerHTML = "";
+    if(v) put(id, v); else delete placed[id];
+    render();
+    if(next){
+      const rest = SLOTS.filter(s => !placed[s.id]);
+      if(rest.length) openInput(rest[0].id);
+    }
+  };
+  inp.addEventListener("keydown", e => {
+    if(e.key === "Enter"){ e.preventDefault(); commit(true); }
+    if(e.key === "Escape"){ e.preventDefault(); inp.value = cur; commit(false); }
+  });
+  inp.addEventListener("blur", () => commit(false));
+}
+
+function hideResults(){ document.getElementById("results").hidden = true; }
+
+function check(){
+  checked = true; activeSlot = null;
+  verdictOf = {};
+  let ok = 0, spell = 0;
+  const per = {ville:[0,0], fleuve:[0,0], montagne:[0,0], pays:[0,0]};
+  const errors = [];
+  for(const s of SLOTS){
+    const k = bankCat(s.cat);
+    per[k][1]++;
+    const p = placed[s.id];
+    const v = p ? judge(s, p.value) : "empty";
+    verdictOf[s.id] = v;
+    if(v === "ok"){ ok++; per[k][0]++; }
+    else if(p){ if(v === "spell") spell++; errors.push({was:p.value, is:s.label, spell:v === "spell"}); }
+  }
+  document.getElementById("tScore").innerHTML = ok + '<span style="font-size:16px;color:var(--ink-3)">/' + N + '</span>';
+  const res = document.getElementById("results");
+  res.hidden = false;
+
+  const missing = N - Object.keys(placed).length;
+  const left = N - ok;
+  let v;
+  if(ok === N) v = "<b>Sans faute.</b> Les " + N + " repères sont à leur place.";
+  else if(ok >= N*0.82) v = "<b>" + ok + " sur " + N + ".</b> La carte est solide, il reste " + left + " repère" + (left>1?"s":"") + " à revoir.";
+  else if(ok >= N*0.5) v = "<b>" + ok + " sur " + N + ".</b> La moitié est acquise — reprends les repères en rouge.";
+  else v = "<b>" + ok + " sur " + N + ".</b> Repasse la carte corrigée, puis recommence à blanc.";
+  if(spell) v += " " + spell + (spell>1 ? " erreurs sont" : " erreur est") + " une faute d'orthographe : le bon repère, mal écrit.";
+  if(missing) v += " " + missing + " emplacement" + (missing>1?"s":"") + " laissé" + (missing>1?"s":"") + " vide" + (missing>1?"s":"") + ".";
+  document.getElementById("verdict").innerHTML = v;
+
+  const bars = document.getElementById("bars");
+  bars.innerHTML = "";
+  for(const key of ["ville","fleuve","montagne","pays"]){
+    const [a,b] = per[key];
+    const row = document.createElement("div");
+    row.className = "bar";
+    row.innerHTML = '<span>' + (key === "pays" ? "Pays/mers" : key === "ville" ? "Villes" : key === "fleuve" ? "Fleuves" : "Massifs") +
+      '</span><span class="track"><span class="fill" style="width:' + Math.round(a/b*100) + '%;background:' + CATS[key].color + '"></span></span><span class="n">' + a + '/' + b + '</span>';
+    bars.appendChild(row);
+  }
+
+  const list = document.getElementById("errs");
+  list.innerHTML = "";
+  for(const e of errors){
+    const li = document.createElement("li");
+    const w = document.createElement("span"); w.className = "was"; w.textContent = e.was;
+    const i = document.createElement("span"); i.className = "is"; i.textContent = e.is;
+    li.append(w, document.createTextNode("→"), i);
+    if(e.spell){ const t = document.createElement("span"); t.className = "tag"; t.textContent = "orthographe"; li.append(t); }
+    list.appendChild(li);
+  }
+  render();
+}
+
+function clearAll(){
+  placed = {}; activeSlot = null; checked = false; verdictOf = {};
+  hideResults();
+  document.getElementById("tScore").textContent = "—";
+  render();
+}
+
+function setMode(m){
+  if(closeOpen) closeOpen();                        // valider une saisie en cours
+  mode = m;
+  document.getElementById("mEx").setAttribute("aria-pressed", String(m === "exercice"));
+  document.getElementById("mRev").setAttribute("aria-pressed", String(m === "revision"));
+  document.getElementById("controls").hidden = (m === "revision");
+  document.getElementById("results").hidden = (m === "revision") || !checked;
+  document.getElementById("hint").textContent = m === "revision"
+    ? "La carte compl\u00e8te, \u00e0 m\u00e9moriser. Tes r\u00e9ponses sont conserv\u00e9es : reviens \u00e0 l\u2019exercice quand tu veux."
+    : "Clique un emplacement et tape le nom. Entr\u00e9e valide et saute au suivant, \u00c9chap annule. L\u2019orthographe et les accents comptent ; les majuscules non.";
+  activeSlot = null;
+  render();
+}
+
+document.getElementById("mEx").addEventListener("click", () => setMode("exercice"));
+document.getElementById("mRev").addEventListener("click", () => setMode("revision"));
+document.getElementById("bCheck").addEventListener("click", check);
+document.getElementById("bClear").addEventListener("click", clearAll);
+load();
+buildSlots();
+setMode(mode);
+</script>
